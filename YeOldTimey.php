@@ -7,6 +7,7 @@ class YeOldenTimey
     public $totaltime;
     public $laps = array();
 
+    //starts timer on ini
 	public function __construct()  
     {  
         $this->startTimer();
@@ -15,21 +16,20 @@ class YeOldenTimey
     public function startTimer()  
     {  
         $this->starttime = microtime();  
-        echo "<p>Start time: " . $this->starttime . '</p>';
     }
 
     public function endTimer()
     {
     	$this->endtime = microtime();
-        echo "<p>End Time: " . $this->endtime . '</p>';
     }
-
-    public function getEndTime()
+    //calculates start/end time difference
+    public function getTotalTime()
     {
     	$this->endTimer();
     	$this->totaltime = $this->endtime - $this->starttime;
     	return $this->totaltime;
     }
+    //records a lap time
     public function setLapTime()
     {
     	$time = microtime();
@@ -37,6 +37,7 @@ class YeOldenTimey
     	$this->laps[$next] = $time;
 
     }
+    //main method
     public function timer( $action = 'lap' )
     {
     	switch($action)
@@ -52,20 +53,30 @@ class YeOldenTimey
     			$this->setLapTime();
     		break;
     		case 'get':
-    			return $this->getEndTime();
+    			return $this->getTotalTime();
     		break;
     	}
     }
 } 
+/*
+class YeOldLapTimes extends YeOldenTimey{
+
+    //manages lap times
+    public function getLapTime( $action, $lapTime )
+    {
+        switch($action)
+        {
+            case 'compare':
+
+            break;
+            case 'get':
+
+            break;
+        }
+    }
 
 
-//starts timer
-$newTimer = new YeOldenTimey;
+}*/
 
-
-
-$totaltime = $newTimer->timer('get');
-echo '<br />';
-echo 'Total time elapsed: ' . $totaltime;
 
 ?>
