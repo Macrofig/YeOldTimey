@@ -5,7 +5,7 @@ class YeOldenTimey
     public $starttime;
     public $endtime;
     public $totaltime;
-    public $laps = array();
+    public $laptimes = array();
 
     //starts timer on ini
 	public function __construct()  
@@ -15,12 +15,12 @@ class YeOldenTimey
 
     public function startTimer()  
     {  
-        $this->starttime = microtime();  
+        $this->starttime = microtime(true);  
     }
 
     public function endTimer()
     {
-    	$this->endtime = microtime();
+    	$this->endtime = microtime(true);
     }
     //calculates start/end time difference
     public function getTotalTime()
@@ -30,53 +30,66 @@ class YeOldenTimey
     	return $this->totaltime;
     }
     //records a lap time
-    public function setLapTime()
+    public function setLapTime( $name = '' )
     {
-    	$time = microtime();
-    	$next = count($this->laps) + 1;
-    	$this->laps[$next] = $time;
-
+    	$time = microtime(true);
+    	if ( $name == '' OR empty($name) ) $this->laptimes[]=$time;
+    	else $this->laptimes[$name] = $time;
     }
-    //main method
-    public function timer( $action = 'lap' )
+    public function getLapTime( $name = '' )
     {
-    	switch($action)
-    	{
-    		case 'restart':
-    			//restarts timer
-    			$this->startTimer();
-    		break;
-    		case 'end':
-    			$this->endTimer();
-    		break;
-    		case 'lap':
-    			$this->setLapTime();
-    		break;
-    		case 'get':
-    			return $this->getTotalTime();
-    		break;
-    	}
+        if ( $name == '' OR empty($name) ) return $this->laptimes;
+            else return $this->laptimes[ $name ];
+        
     }
-} 
-/*
-class YeOldLapTimes extends YeOldenTimey{
 
-    //manages lap times
-    public function getLapTime( $action, $lapTime )
+
+    public function laps( $action = 'set', $name = '' )
     {
-        switch($action)
+        switch( $action )
         {
-            case 'compare':
-
-            break;
             case 'get':
+                return $this->getLapTime($name);
+            break;
+            case 'set':
+                $this->setLapTime($name);
+            break;
+            case 'compare':
+                $laptime = $this->getLapTime($name);
+                $endtime = empty($this->endtime) ? microtime(true) : $this->endtime;
+                $totaltime = $endtime - $laptime;
+                //echo $endtime;
+                //echo $laptime;
+                return $totaltime;
+            break;
+            default:
+            // default to set
+                $this->setLapTime($name);
 
             break;
         }
     }
+    //main method
+    public function timer( $action = 'lap' )
+    {
+        switch( $action )
+        {
+            case 'restart':
+                //restarts timer
+                $this->startTimer();
+            break;
+            case 'end':
+                $this->endTimer();
+            break;
+            case 'get':
+                return $this->getTotalTime();
+            break;
+            default:
+            //trigger a lap
+                $this->laps();
 
-
-}*/
-
-
+            break;
+        }
+    }
+} 
 ?>
